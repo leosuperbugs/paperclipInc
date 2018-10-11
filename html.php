@@ -32,6 +32,19 @@ function html_wikilink($id,$name=null,$search=''){
     return $xhtml_renderer->internallink($id,$name,$search,true,'navigation');
 }
 
+function _paperclip_doddlemid() {
+    //    print '<div class="centeralign">'.NL;
+    print '<div class="paperclip__doddlemid">
+                <div class="paperclip__logo">
+                <img src="/../lib/tpl/starter/images/home/logo-pet.png" >';
+//    include dirname(__FILE__).'/../lib/tpl/starter/images/home/logo-pet.svg';
+    print       '</div>
+                <p>建立你的当代生活说明书。</p>
+           </div>';
+    //
+
+}
+
 /**
  * The loginform
  *
@@ -1633,7 +1646,6 @@ function html_msgarea(){
 
     unset($GLOBALS['MSG']);
 }
-
 /**
  * Prints the registration form
  *
@@ -1647,13 +1659,15 @@ function html_register(){
     $base_attrs = array('size'=>50,'required'=>'required');
     $email_attrs = $base_attrs + array('type'=>'email','class'=>'edit');
 
-    print p_locale_xhtml('register');
-    print '<div class="centeralign">'.NL;
+    print '<div class=paperclip__register>';
+//    print '<div class="centeralign">'.NL;
+    _paperclip_doddlemid();
     $form = new Doku_Form(array('id' => 'dw__register'));
     $form->startFieldset($lang['btn_register']);
     $form->addHidden('do', 'register');
     $form->addHidden('save', '1');
     $form->addElement(form_makeTextField('login', $INPUT->post->str('login'), $lang['user'], '', 'block', $base_attrs));
+    $form->addElement('<p><a href="https://www.weibo.com/p/1005056414205745">申请邀请码</a></p>');
     if (!$conf['autopasswd']) {
         $form->addElement(form_makePasswordField('pass', $lang['pass'], '', 'block', $base_attrs));
         $form->addElement(form_makePasswordField('passchk', $lang['passchk'], '', 'block', $base_attrs));
@@ -1668,6 +1682,7 @@ function html_register(){
     $form->endFieldset();
     html_form('register', $form);
 
+    print '</div>'.NL;
     print '</div>'.NL;
 }
 
