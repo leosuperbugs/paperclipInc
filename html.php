@@ -41,6 +41,7 @@ function _paperclip_doddlemid() {
     print       '</div>
                 <p>建立你的当代生活说明书。</p>
            </div>';
+    //
 
 }
 
