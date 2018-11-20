@@ -45,6 +45,13 @@ function _paperclip_doddlemid() {
 
 }
 
+function addElementsWithWrap(Doku_Form &$form, array $elements) {
+    $form->addElement('<div class="line__wrapper">');
+    foreach ($elements as $element) {
+        $form->addElement($element);
+    }
+    $form->addElement('</div>');
+}
 /**
  * The loginform
  *
@@ -61,35 +68,40 @@ function html_login($svg = false){
 //    print p_locale_xhtml('login');
     print '<div class=paperclip__login>'.NL;
 //    print '<div class="centeralign">'.NL;
-    print '<div class="paperclip__doddlemid">
-                <div class="paperclip__logo">
-                <img src="/../lib/tpl/starter/images/home/logo-pet.png" >';
-//    include dirname(__FILE__).'/../lib/tpl/starter/images/home/logo-pet.svg';
-    print       '</div>
-                <p>建立你的当代生活说明书。</p>
-           </div>';
+    _paperclip_doddlemid();
 
     $form = new Doku_Form(array('id' => 'dw__login'));
     $form->startFieldset('');
+    $form->addElement('<div class="form__wrapper">');
     $form->addHidden('id', $ID);
     $form->addHidden('do', 'login');
+    // Username or mail address
+    $firstline = array(
+        form_makeTextField('u', ((!$INPUT->bool('http_credentials')) ? $INPUT->str('u') : ''), '邮箱', 'focus__this', 'block')
+    );
     if(actionOK('register')){
         $registerLink = (new \dokuwiki\Menu\Item\Register())->asHtmlLink('', $svg);
-        $form->addElement('<p>'.$lang['reghere'].': '. $registerLink .'</p>');
+        array_push($firstline, '<p>'.$lang['reghere'].': '. $registerLink .'</p>');
     }
-    $form->addElement(form_makeTextField('u', ((!$INPUT->bool('http_credentials')) ? $INPUT->str('u') : ''), $lang['user'], 'focus__this', 'block'));
+    addElementsWithWrap($form, $firstline);
+
+
+    // Password
+    $secondline = array(
+        form_makePasswordField('p', $lang['pass'], '', 'block')
+    );
     if (actionOK('resendpwd')) {
         $resendPwLink = (new \dokuwiki\Menu\Item\Resendpwd())->asHtmlLink('', $svg);
-        $form->addElement('<p>'.$lang['pwdforget'].': '. $resendPwLink .'</p>');
+        array_push($secondline, '<p>'.$lang['pwdforget'].': '. $resendPwLink .'</p>');
     }
-    $form->addElement(form_makePasswordField('p', $lang['pass'], '', 'block'));
-//    if($conf['rememberme']) {
-//        $form->addElement(form_makeCheckboxField('r', '1', $lang['remember'], 'remember__me', 'simple'));
-//    }
+    addElementsWithWrap($form, $secondline);
+
+    $form->addElement('</div>');
+
+    $form->addElement('<div class="button__wrapper">');
     $form->addElement(form_makeButton('submit', '', $lang['btn_login']));
+    $form->addElement('</div>');
     $form->endFieldset();
-
-
 
     html_form('login', $form);
 //    print '</div>'.NL;
@@ -1659,26 +1671,37 @@ function html_register(){
     $base_attrs = array('size'=>50,'required'=>'required');
     $email_attrs = $base_attrs + array('type'=>'email','class'=>'edit');
 
-    print '<div class=paperclip__register>';
+    print '<div class="paperclip__register">';
 //    print '<div class="centeralign">'.NL;
     _paperclip_doddlemid();
     $form = new Doku_Form(array('id' => 'dw__register'));
     $form->startFieldset($lang['btn_register']);
+
+    $form->addElement('<div class="form__wrapper">');
     $form->addHidden('do', 'register');
     $form->addHidden('save', '1');
-    $form->addElement(form_makeTextField('login', $INPUT->post->str('login'), $lang['user'], '', 'block', $base_attrs));
-    $form->addElement('<p><a href="https://www.weibo.com/p/1005056414205745">申请邀请码</a></p>');
-    if (!$conf['autopasswd']) {
-        $form->addElement(form_makePasswordField('pass', $lang['pass'], '', 'block', $base_attrs));
-        $form->addElement(form_makePasswordField('passchk', $lang['passchk'], '', 'block', $base_attrs));
-    }
-    $form->addElement(form_makeTextField('fullname', $INPUT->post->str('fullname'), $lang['fullname'], '', 'block', $base_attrs));
-    $form->addElement(form_makeField('email','email', $INPUT->post->str('email'), $lang['email'], '', 'block', $email_attrs));
     // paperclip hacked
     if ($conf['needInvitation'] == 0) {
-        $form->addElement(form_makeTextField('invitationCode', $INPUT->post->str('invitationCode'), '邀请码', '', 'block', $base_attrs));
+        addElementsWithWrap($form, array(
+            0 => form_makeTextField('invitationCode', $INPUT->post->str('invitationCode'), '邀请码', '', 'block', $base_attrs),
+            '<p><a href="https://www.weibo.com/p/1005056414205745">申请邀请码</a></p>'
+            )
+        );
     }
-    $form->addElement(form_makeButton('submit', '', $lang['btn_register']));
+    addElementsWithWrap($form, array( 0 => form_makeTextField('login', $INPUT->post->str('login'), $lang['user'], '', 'block', $base_attrs)));
+    addElementsWithWrap($form, array( 0 => form_makeField('email','email', $INPUT->post->str('email'), $lang['email'], '', 'block', $email_attrs)));
+    if (!$conf['autopasswd']) {
+        addElementsWithWrap($form, array( 0 => form_makePasswordField('pass', $lang['pass'], '', 'block', $base_attrs)));
+        addElementsWithWrap($form, array( 0 => form_makePasswordField('passchk', $lang['passchk'], '', 'block', $base_attrs)));
+    }
+    addElementsWithWrap($form, array( 0 => form_makeTextField('fullname', $INPUT->post->str('fullname'), $lang['fullname'], '', 'block', $base_attrs),
+    1 => '<div class="table__button__wrapper">',
+    2 => form_makeButton('submit', '', $lang['btn_register']),
+    3 => '</div>'
+    ));
+
+
+    $form->addElement('</div>');
     $form->endFieldset();
     html_form('register', $form);
 

@@ -1,0 +1,6 @@
+!html.php
+!form.php
+*.php
+.htaccess
+lang/
+preload.php.dist
