@@ -1748,8 +1748,10 @@ function html_updateprofile(){
         $form->addElement(form_makeTag('br'));
         $form->addElement(form_makePasswordField('oldpass', $lang['oldpass'], '', 'block', array('size'=>'50', 'required' => 'required')));
     }
+    $form->addElement('<div class="button__wrapper">');
     $form->addElement(form_makeButton('submit', '', $lang['btn_save']));
     $form->addElement(form_makeButton('reset', '', $lang['btn_reset']));
+    $form->addElement('</div">');
 
     $form->endFieldset();
     html_form('updateprofile', $form);
